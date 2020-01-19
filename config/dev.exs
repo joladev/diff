@@ -46,16 +46,15 @@ config :diff, DiffWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :diff, DiffWeb.Endpoint,
-  http: [port: 4004],
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/diff_web/{live,views}/.*(ex)$",
-      ~r"lib/diff_web/templates/.*(eex)$"
-    ]
-  ]
+config :diff, DiffWeb.Endpoint, http: [port: 4004]
+# live_reload: [
+#   patterns: [
+#     ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+#     ~r"priv/gettext/.*(po)$",
+#     ~r"lib/diff_web/{live,views}/.*(ex)$",
+#     ~r"lib/diff_web/templates/.*(eex)$"
+#   ]
+# ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

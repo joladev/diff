@@ -14,7 +14,24 @@ import "phoenix_html"
 import { Socket } from 'phoenix'
 import { LiveSocket } from "phoenix_live_view"
 
-let liveSocket = new LiveSocket("/live", Socket, {})
+const Hooks = {}
+const searchState = {}
+
+Hooks.Serialize = {
+  mounted() {
+    this.el.addEventListener('input', e => {
+      if (e.inputType === "inputText") {
+        searchState.query = e.target.value;
+      } else {
+        searchState[e.target.name] = e.target.value
+      }
+      console.log(searchState)
+    })
+  }
+}
+
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: view => searchState })
+window.liveSocket = liveSocket
 liveSocket.connect()
 
 /*

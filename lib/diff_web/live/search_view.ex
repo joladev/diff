@@ -6,6 +6,14 @@ defmodule DiffWeb.SearchLiveView do
   end
 
   def mount(_session, socket) do
+    IO.inspect(self(), label: "pid")
+
+    case get_connect_params(socket) do
+      serialized_state ->
+        IO.inspect(serialized_state, label: "serialized_state")
+        send(self(), {:rehydrate, serialized_state})
+    end
+
     {:ok, reset_state(socket)}
   end
 
@@ -88,6 +96,41 @@ defmodule DiffWeb.SearchLiveView do
            to: nil,
            from: nil
          )}
+    end
+  end
+
+  def handle_info({:rehydrate, recovered_state}, socket) do
+    IO.inspect(recovered_state, label: "recovered_state")
+
+    with %{"q" => query} <- recovered_state,
+         suggestions <- get_suggestions(query, 3),
+         {:ok, versions} <- Diff.Package.Store.get_versions(query) do
+      IO.inspect(versions, label: "versions")
+      from_releases = Enum.slice(versions, 0..(length(versions) - 2))
+      to_releases = Enum.slice(versions, -1..-1)
+      from = Map.get(recovered_state, "from") || List.last(from_releases)
+      to = Map.get(recovered_state, "to") || List.last(to_releases)
+
+      {:noreply,
+       assign(socket,
+         result: query,
+         query: query,
+         releases: versions,
+         from_releases: from_releases,
+         to_releases: to_releases,
+         to: to,
+         from: from,
+         suggestions: suggestions,
+         not_found: nil
+       )}
+    else
+      {:error, :not_found} ->
+        %{"q" => query} = recovered_state
+        send(self(), {:search, String.downcase(query)})
+        {:noreply, assign(socket, query: query)}
+
+      _ ->
+        {:noreply, socket}
     end
   end
 

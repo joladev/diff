@@ -1,6 +1,6 @@
 
 <div class="search-area">
-  <form phx-change="search" phx-submit="go" class="search-form">
+  <form phx-hook="Serialize" phx-change="search" phx-submit="go" class="search-form">
     <input
       autocomplete="off"
       autofocus
@@ -24,7 +24,7 @@
     The package only has one version so there's nothing to diff with.
   <% else %>
     <%= if @result do %>
-      <form phx-change="select_version" class="version-form">
+      <form phx-hook="Serialize" phx-change="select_version" class="version-form">
         <div class="version-area">
           <div class="select-area">
             <label for="from">From</label>
